@@ -228,6 +228,8 @@
 		Corregir error de que no se ve la tabla: esto sucede si viene con codigo pre fabricado y no 
 		se le esta asignando el delagate, borrar ester codigo si no se va usar
 
+		* Style: Grouped es el mejor estilo para las tablas estaticas
+
 	- Programatic Views
 
 	- Vista de Login
@@ -239,7 +241,7 @@
         // Creamos las acciones que tendra la alerta
         
         let cancelar = UIAlertAction(title: "No!", style: .cancel, handler: {
-            //Closhure
+            //Clousures
             accion in
             print("El usuario cancelo")
         })
@@ -270,7 +272,7 @@
 
 		* viewDidAppear() -> es una funcion que se utiliza para agregar
 		contenido dinamico a la aplicacion, se debe instanciar el del metodo padre
-		con super.viewDidAppear()
+		con super.viewDidAppear(parameter)
 
 		- viewControllers -> es un array que contiene todas las vistas del UITabBarController.
 		Como es un array de vistas estas se pueden gestionar como cambiar titulos a agregarles badge
@@ -278,7 +280,7 @@
 		Ejemplo de agregar una vista dinamicamente.
 
 		```
-			func viewDidAppear(_ animated: Bool){
+			override func viewDidAppear(_ animated: Bool){
 
 				super.viewDidAppear(animated);
 
@@ -305,9 +307,224 @@
 
 	- UINavigationController
 
+		Es un controlador que me permite realizar una navegacion sencilla en IOS.
+
+		Para entender la diferencia entre en UITabBarController vs UINavigationController
+		es que el UINavigationController se utiliza para navegacion entre secciones en especifico
+		de una seccion en especifico:
+
+		Ej: menu usuario, donde se pueda gestionar todo los usuarios en diferentes pantallas mediante
+		el UINavigationController (CRUD)
+
+		Mientras que el UITabBarController es para el menu principal
+
+		Nota: Al igual que el UITabBarController se vera en el storyboard el 
+		UINavigationController que a este le puedo asignar un Controller que herede desde
+		el UINavigationController en este caso y poder manipular sus vistas.
+
+		Cada seccion en especifico debe tener un UINavigationController Inicial !Important
+
 	- Multiple View Controller
 
+		Nota: es bueno asignar las pantallas de login mediante un segue al home de la app
+		y que sea un segue "modality" osea un modal.
+
+		** Para poder manejar las relaciones desde codigo siempre es bueno asignar un ID
+		a las relaciones
+
+		**** self.performSegue() -> Que es esto?
+		es un metodo de los viewControllers que me permite ejecutar una relacion entre vistas
+		mediante el ID de estas relacion. es un IrA por decirlo así
+
+
+		*** SESSIONES EVER STYLE ^^ ***
+
+		Como guardar sessiones por decirlo asi, para guardar preferencias del usuario
+		como por ejemplo si desea que se le envien notificaciones o guardar un token de inicio
+		de session para saltar pantallas en caso de ser true
+
+		SET
+
+		UserDefault.standard.setValue("VALOR", forKey: "Identificador");
+
+		// Salvamos
+		UserDefault.standard.synchronize()
+
+		GET
+
+		UserDefault.standard.value(forKey: "Identificador o token")
+		// Eso devuelve un optional ya que puede que no exita, tratar como tal
+
+		NOTA: en dicha session se pueden guardar token para consultar informacion
+		en un webservice o lo que sea.
+
+		*** Cerrar modales ***
+
+		Esto es para que no te suceda lo que ocurria en la version anterior del app
+		que una vez que creabas un contacto, y por amor al arte le dabas para atras una
+		vez creado regresaba al formulario, por eso esta clase de vistas deben estar en un modal
+		para cerrarlas una vez se crea o se realiza la accion
+
+		Nota: es como ir hacia atras ../../../ se colocan los ../ que son necesarios
+		para ir hacia atras en este caso de ser ../ es "presentingViewController"
+		y al final se instancia el metodo "dismiss()" para cerrar dichos modales
+
+		EJ: presentingViewController?.presentingViewController?.dismiss();
+
+		Si se solo se quiere cerrar un modal se coloca solo "dismiss()" dentro de este
+
+		OK??
+
+
+		***** NOTA IMPORTANTE *****
+
+		Como instertar un UINavigationController o un UITabBarController en una vista?
+		Menu > Editor > Embed In
+
 	- ScrollViews
+
+		Esta es una vista que me permite agregar mas contenido que el tamaño que tiene la pantalla
+
+		* El elemento se llama asi mismo, y se coloca dentro de la vista
+
+		* Este como es un elemento se debe tratar como tal y se debe agregar al codigo como 
+		un @IBOutlet
+
+		Horizontal con botones EJEMPLO
+
+		@IBOutlet weak var grid: UIScrollView!
+    
+	    override func viewDidLoad() {
+	        super.viewDidLoad()
+	        
+	        for i in 0...5{
+	            
+	            let newGrid = UIView()
+	            
+	            // Set Tamanio
+	            
+	            if i == 0{
+	                newGrid.frame = CGRect(x: 0, y: 0, width: self.grid.frame.size.width, height: self.grid.frame.size.height)
+	            }else{
+	                newGrid.frame = CGRect(x: CGFloat(i)*self.view.frame.size.width+CGFloat(15*i), y: 0, width: self.grid.frame.size.width, height: self.grid.frame.size.height)
+	            }
+	            
+	            newGrid.backgroundColor = UIColor(red: CGFloat(arc4random_uniform(255))/255.0, green: CGFloat(arc4random_uniform(255))/255.0, blue: CGFloat(arc4random_uniform(255))/255.0, alpha: 1.0)
+	            
+	            grid.addSubview(newGrid)
+	        }
+	        
+	        grid.contentSize = CGSize(width: ((self.view.frame.size.width+CGFloat(15))*6)-15, height: self.grid.frame.size.height)
+	        grid.showsVerticalScrollIndicator = false
+	    }
+	    
+	    @IBAction func Excecute(_ sender: UIButton) {
+	        
+	        
+	        let currentX = grid.contentOffset.x
+	        
+	        let vistaActual = Int(currentX / grid.frame.size.width)
+	        
+	        var nuevaVista = 0
+	        
+	        if sender.currentTitle! == "Anterior"{
+	            
+	            nuevaVista = vistaActual - 1;
+	            
+	        }else if sender.currentTitle! == "Siguiente"{
+	            
+	            nuevaVista = vistaActual + 1
+	        }else if sender.currentTitle! == "Cerrar"{
+	            
+	            self.dismiss(animated: true, completion: nil)
+	            
+	        }
+	        
+	        if(nuevaVista<0 || nuevaVista > 5){
+	            return
+	        }
+	        
+	        let newX = CGFloat(nuevaVista) * self.grid.frame.size.width
+	        
+	        grid.contentOffset = CGPoint(x: newX, y: grid.contentOffset.y)
+	    }
+
+	    VERTICAL EJEMPLO ^^^
+
+	    @IBOutlet weak var scroll: UIScrollView!
+    
+	    var hasta:Int = 10
+
+	    override func viewDidLoad() {
+	        super.viewDidLoad()
+
+	        // Do any additional setup after loading the view.
+	        
+	        for i in 0...self.hasta{
+	            
+	            let vista = UIView()
+	            
+	            if i == 0{
+	                vista.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: scroll.frame.size.height)
+	            }else{
+	                vista.frame = CGRect(x: 0, y: CGFloat(i)*scroll.frame.size.height+CGFloat(15*i), width: self.view.frame.size.width, height: scroll.frame.size.height)
+	            }
+	            
+	            vista.backgroundColor = UIColor(red: CGFloat(arc4random_uniform(255))/255.0, green: CGFloat(arc4random_uniform(255))/255.0, blue: CGFloat(arc4random_uniform(255))/255.0, alpha: 1.0)
+	            
+	            scroll.addSubview(vista)
+	        }
+	        
+	        scroll.contentSize = CGSize(width: self.view.frame.size.width, height: (scroll.frame.size.height+CGFloat(15))*CGFloat((self.hasta+1)) - 15)
+	    }
+
+
+	    Como cargar imagenes en un scroll vertical?
+
+	    for i in 0...hasta{
+            
+            let img = URL(string: "http://lorempixel.com/375/375/")
+            
+            let session = URLSession(configuration: .default)
+            
+            let res = session.dataTask(with: img!) { (data, response, error) in
+                if let e = error {
+                    print("Error downloading cat picture: \(e)")
+                } else {
+                    // No errors found.
+                    // It would be weird if we didn't have a response, so check for that too.
+                    if let res = response as? HTTPURLResponse {
+                        print("Downloaded cat picture with response code \(res.statusCode)")
+                        if let imageData = data {
+                            // Finally convert that Data into an image and do what you wish with it.
+                            let image = UIImage(data: imageData)
+                            
+                            let carView = UIImageView(image: image)
+                            
+                            if i == 0{
+                                carView.frame = CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.gridImg.frame.size.height)
+                            }else{
+                                carView.frame = CGRect(x: 0, y: CGFloat(i)*self.gridImg.frame.size.height+CGFloat(15*i), width: self.view.frame.size.width, height: self.gridImg.frame.size.height)
+                            }
+                            
+                            self.gridImg.addSubview(carView)
+                            
+                            
+                            // Do something with your image.
+                        } else {
+                            print("Couldn't get image: Image is nil")
+                        }
+                    } else {
+                        print("Couldn't get response code for some reason")
+                    }
+                }
+            }
+            
+            res.resume()
+            
+        }
+        
+        self.gridImg.contentSize = CGSize(width: self.view.frame.size.width, height: (gridImg.frame.size.height+CGFloat(15))*CGFloat((self.hasta+1)) - 15)
 
 	- UITableView
 
