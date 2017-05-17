@@ -528,13 +528,230 @@
 
 	- UITableView
 
+		Es una de las vistas mas usadas. El "Table View" es dinamico, una vez agregado el Table View
+		Se le debe agregar a este los "Table View Cell"
+
+		A los Table View Cell, se le pueden agregar lo que sea y se puede cambiar su estilo.
+
+		Nota: El controlador que manejara dicha celda debe Heredar de la clase -> UITableViewCell
+		Importante: Se selecciona la celda y se le asigna el el controlador que hereda del UITableViewCell
+
+		awakeFromNib()-> Es un metodo que se debe sobrescribir cuando se le asigna un controlador a un elemento
+		del storyBoard y no a la vista completaa, en este caso se le esta asignando a la celda.
+
+		Una vez creados en el controlador (UITableView) todos los set y get de los datos que tendra
+		la celda se procede a crear el controlador del Feed o la vista completa
+
+		Si los metodos lo definimos como public estos pueden se accedidos desde todas partes
+
+		UITableViewDelegate : Es el delegado que me permite gestionar por completo la tabla,
+		desde ordenarlas, eliminar celdas, agregar nuevas, editarlas, etc.
+
+		UITableViewDataSource : Es la informacion que tendra la tabla, ejemplo la cantidad
+		de celdas.
+
+		Importante:
+
+		Cunado se trabaja con tablas en el contolador del feed se debe especificar el numero de filas
+		que tendra dicha tabla 
+
+		tableview -> numberOfRowInSection
+
+		Se debe especificar la celda a la tabla con el metodo
+
+		tableView -> cellForRowAt
+
+		dequeueReusableCell("Identificador") -> Se usa para identificar una celda y resurla para de
+		esta manera mejorar el renderizado de filas de la table dicho valor debe ser interpretado
+		como el controlador que se uso para gestionar la celda
+
+		let var = dequeueReusableCell("ID") as! ControladorDeLaCelda
+
+		Ya instanciado dicho controlador se procede a insertar los valores en en la fila
+		con los metodos del controlador
+
+		Nota: tener en cuenta que solo que solo basta poner "tableView" para ver todas
+		las funciones que se pueden sobrescribir para gestionar dicha tabla
+
+		Importante: Simpre colocar los delegados, una manera de hacer esto es hacer clic sobre la 
+		tabla en este caso y arrastrarlo hasta el cuadro naranja en el storyboard y seleccionar
+		delegate y dataSource
+
+		o con self.delegate = ?? // En este caso habria que ver la manera de aplicarlo
+
 	- UICollectionView
+
+		Los coleccion view son parecidos a los table views, pero son mas personalizables
+		Para usarlo se crea un "ViewController" y se usa un "CollectionView"
+
+		Para las vistas de las celdas de la coleccion se crea una nueva interfaz [] 
+		vacia para definir como es que se necesita dicho recuadro
+
+		La clase que hereda el Controller de las celdas de la coleccion es "UICollectionViewCell"
+
+		- Se le asigna el controlador a la vista, seleccionado la vista osea el widget
+
+		- A dicho controlador se le debe definir el awakeFromNib()
+
+		override func awakeFromNib(){
+			super.awakeFromNib()
+		}
+
+		** Vista del CollectionView **
+
+		1 - Dicha vista debe implementar el protocolo "UICollectionViewDataSource"
+
+
+		Sobrescrituras en la vista ** OJO **
+
+		+ collectionView -> numberOfItemInSection: con esta funcion definimos el numero de items
+		que tentra mi coleccion
+
+		+ collectionView -> cellForItemAt: En este override instanciamos la UICollectionViewCell
+		y definimos los valores de este.
+
+			La instancia debe ser con el "colecctionView.dequeueReusableCell" con el as! CLASE
+			esto por la sencilla razon de que debemos reutilizar la celda no crearlas y crearlas
+			una y otra vez.
+
+		+ Una vez realizamos esto debemos registras el "xib" en el viewDidLoad
+			Usamos el metodo -> ->  .register(UINib.init(etc etc)) este es un metodo
+			perteneciente al objero del coleccion cuando se desliza al controlador
+
+			collection.register(UINib.init(nibName: "CellCollection", bundle: nil), forCellWithReuseIdentifier: "itemCollection")
+
+			Explicacion: se instancia el "register" con el argumento "anyClass", una vez aqui
+			se usa la clase UINib con el metodo init y el parametro para estos que sera el "nibName"
+			que hace referencia al nombre de las interface
+
+		+ Al final debemos agregar su respectivo delegado o dataSource segun aplique
+
+		Importante: Se deben definir los tamaños de las celdas o ITEMS desde el StoryBoard en la
+		regla.
+
+		Nota: En la regla estan todas las opciones que los ITEMS tiene, tambien se pueden personalizar
+		por codigo.
+
+		A la elemento del XIB se le debe asignar un IDENTIFICADOR UNICO
+
+		Nota: Para saber el numero de el item se usa el "indexPath.item" en el metodo "cellForItemAt"
 
 # Acceso a Hardware
 
 	- Acceso a la cámara y UIImagePicker
 
+		Nota: Si se preciona la tecla "alt" mientras desplazamos el mouse sobre
+		una vista en el storyboard podemos ver sus distacias en pixeles
+
+		** Permisos para poder acceder a las fotos y archivos: Para esto nos dirigimos
+		al arhivo .plist y localizamos una opcion llamada-> "Privacy Photo Library Usage Des..."
+		Esta opcion requiere un texto para mostrarle al usuario cuando intentemos
+		acceder por primera vez a las fotos del usuario.
+
+		** Permisos para poder acceder a la camara es -> "Privacy - Camera Usage Description"
+
+		* Explicacion del codigo para trabajar con la fotos y camaras *
+
+		1 - Debemos usar el delegado de las imagenes -> UIImagePickerControllerDelegate y el Delegado de
+		la navegación ya que es requerido -> UINavigationControllerDelegate
+
+		// Pasos prinsipales para acceder a la libredira de fotos
+
+		1 - Instanciar la clase UIImagePickerController
+
+		2 - A la propiedad del objeto ".sourceType" asignarle .photoLibrary
+
+		2.5 - En caso de que se requiera la camara usamos la opcion .camera para
+		la propiedad .sourceType
+
+		3 - Al objeto asignarle el delegado = obj.delegate = self
+
+		4 - Mostramos la presentacion de la vista o camara con la propiedad
+			self.present()
+
+		* En caso de querer que se pueda editar la imagen antes de seleccionamos
+		marcamos la propiedad "allowsEditing = true"
+
+		*** Como detectamos que se ha seleccionano una foto?
+
+		1 - Usamos la funcion del "UIImagePickerControllerDelegate" -> imagePickerController
+		con el parametro "didFinishPickingMediaWithInfo" esta opcion lo que hace es ejecutarse cuando
+		el usuario selecciona una imagen
+
+		2 - Este parametro viene con un array con la informacion de la imagen
+
+		3 - Una vez sacada la imagen que se necesita ya que este array viene con varias la original y la
+		editada, se la asignamos a nuestro UIImageView pero antes la convertimos a UIImage con "as?"
+
+			La posicion del array es-> UIImagePickerControllerEditedImage
+			
+		4 - Cerramos la venta, el primer parametro es un objeto del controlador que representa
+		esta vista, usamos ese objeto y llamamos su "dismiss()"
+
 	- MapKit
+
+		Estos son los mapas de IOS
+
+		Se debe agregar la libreria de mapKit a la aplicacion
+	    para que dicho widget funcione 
+
+		Para agregar una libreria nos vamos a Build Phases -> Link Binary With Libraries
+		y le damos a + y agrega
+
+		Importante: Tambien se debe importar dicha libreria ej:
+		Import MapKit
+
+		CoreLocation (Framework -> Liberia): Es una libreria que me permite 
+		acceder a las cordenadas, el gps, la ubicacion y mucho mas.
+		Import CoreLocation
+
+		*** Permisos: 
+
+			Privacy - Location When In Usage Location : Este permiso me permite
+			acceder a la hubicacion del usuario cuando este esta dentro de la
+			aplicacion.
+
+		+ Como agregar mi hubicacion al mapa y trabajar con este
+
+		0 - Se crea el objeto del mapa que apunte hacia el viewControllers
+
+		1 - Importo las librerias
+			
+			Import MapKit
+			Import CoreLocation
+
+		2 - Usar el delegado "CLLocationManagerDelegate"
+
+		Nota: Yo puedo acceder a la ubicacion del usuario de varias maneras una
+		cuando la app esta abierta y la otra es siempre saber dicha hubicacion
+		en segundo plano
+
+		3 - Instanciamos la clase "CLLocationManager()" 
+
+		4 - En el "viewDidApper()" preguntar por dichos permisos y
+		asignarle el "self" a los delegados del mapa y CLLocationManager
+
+		5 - Pedir permiso de rastreo cuando la app este abierta: (viewDidApper)
+
+			Este permiso se debe de pedir siempre para asegurarle al sistema que lo
+			vamos a utilizar y en caso contrario de que el usuario no alla concedido
+			permisos volverlo a preguntas. 
+
+			** Estados de los permisos para comparacion **
+
+				Nota: Si estamos utilizando la libreria "CoreLocation" solo
+				basta cono colocar un "." y hacer "control space" me mostrara
+				todos los Status disponible
+
+			
+
+
+
+		+ requestWhenInUseAuthorization() -> es un metodo que pertenece
+		al widget del mapa y lo que hace es pedir permiso para acceder a la
+		ubicacion.
+
+		4 - Usamos el delegado para sa
 
 	- CoreLocation
 
@@ -561,4 +778,13 @@
 	- Login social con Facebook
 
 	- Pasar datos entre vistas
+
+# Configurar una alerta para IPAD
+
+	Mostrar un alert con estilo ".actionSheet" 
+	se una el metodo
+
+	popoverPresentationController?.barButtonItem = self.navigationItem.rightBarButtonItem
+
+	Se le asigna la posicion en la pantalla
 
