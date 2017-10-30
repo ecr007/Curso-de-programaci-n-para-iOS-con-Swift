@@ -563,9 +563,9 @@
 
 		dequeueReusableCell("Identificador") -> Se usa para identificar una celda y resurla para de
 		esta manera mejorar el renderizado de filas de la table dicho valor debe ser interpretado
-		como el controlador que se uso para gestionar la celda
+		como el controlador que se uso para gestionar la celda. (Es un metodo del tableView)
 
-		let var = dequeueReusableCell("ID") as! ControladorDeLaCelda
+		let var = objTabla.dequeueReusableCell("ID") as! ControladorDeLaCelda
 
 		Ya instanciado dicho controlador se procede a insertar los valores en en la fila
 		con los metodos del controlador
