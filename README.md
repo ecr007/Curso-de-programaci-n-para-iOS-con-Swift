@@ -216,6 +216,9 @@
 
 		* Para asociar mas de boton se desliza la + del @IBAction hacia el elemento en 
 		el storyboard
+		
+		Ocultar vistas o elementos en el StoryBoard: Nos dirigimos al panel lateral derecho y en la opcion de la
+		flechita para abajo, desactivamos la opcion que dice "installed"
 
 	- UITableView de forma simple
 
