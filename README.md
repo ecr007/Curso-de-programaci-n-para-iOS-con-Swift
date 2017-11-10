@@ -338,6 +338,9 @@
 		**** self.performSegue() -> Que es esto?
 		es un metodo de los viewControllers que me permite ejecutar una relacion entre vistas
 		mediante el ID de estas relacion. es un IrA por decirlo así
+		
+		NOTA: Si se usa un tab bar controller o un navigation bar se debe colocar la pantalla de login
+		desde este elemento rais arrastrando desde dicho elemento al viewcontroller del login
 
 
 		*** SESSIONES EVER STYLE ^^ ***
