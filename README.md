@@ -120,6 +120,10 @@
 		var rangos = ["capitan":"Ever", "mayor":"cuevas"]
 
 		* como es un objeto, este trae todo sus metodos para poder gestionarlos
+		
+		Otra forma de declararlos
+		
+		var dictionary:[Int:Int] = [:] // Diccionario vacio
 
 	- Sentencias de control
 
